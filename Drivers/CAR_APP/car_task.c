@@ -36,7 +36,7 @@ void Car_Task_100HZ(void)
 	//速度环PWM
 	  Velocity_Pwm = Vertical_speed_PI(Encoder_left,Encoder_right,OutMpu.pitch, Movement );
 	//转向环PWM
-//		Turn_Pwm = Vertical_turn_PD(Contrl_Turn, OutMpu.gyro_z);
+		Turn_Pwm = Vertical_turn_PD(Contrl_Turn, OutMpu.gyro_z);
 	//最终左右电机的PWM
 		Motor1 = Balance_Pwm + Velocity_Pwm + Turn_Pwm;
 	  Motor2 = Balance_Pwm + Velocity_Pwm - Turn_Pwm;
