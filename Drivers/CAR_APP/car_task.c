@@ -10,8 +10,6 @@ int  Contrl_Turn = 64;                //转向调节变量
 void Car_Task_200HZ(void)
 {
 		static struct mpu6050_data Last_Data;
-	
-	
 		if(mpu_dmp_get_data() !=0 )
 		{
 			OutMpu = Last_Data;
@@ -25,7 +23,6 @@ void Car_Task_200HZ(void)
 //PID控制
 void Car_Task_100HZ(void)
 {
-
 		
 	//获取左右编码器的值，即速度，注意取负(因为编码器位置是对称的)
 	Encoder_left  = Read_Encoder(1);
@@ -41,7 +38,7 @@ void Car_Task_100HZ(void)
 		Motor1 = Balance_Pwm + Velocity_Pwm + Turn_Pwm;
 	  Motor2 = Balance_Pwm + Velocity_Pwm - Turn_Pwm;
 	
-	
+		//限制速度
 		PWM_Limiting(&Motor1,&Motor2);
 	//5、设置电机PWM
 		Set_PWM(Motor1,Motor2);
