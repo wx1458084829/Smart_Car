@@ -12,10 +12,8 @@ void Car_Task_200HZ(void)
 		static struct mpu6050_data Last_Data;
 	
 	
-	//	printf("%f,%f,%f -- \r\n",OutMpu.pitch,OutMpu.roll,OutMpu.yaw);
 		if(mpu_dmp_get_data() !=0 )
 		{
-	//	printf("%d  \r\n",mpu_dmp_get_data());
 			OutMpu = Last_Data;
 		}
 		else
