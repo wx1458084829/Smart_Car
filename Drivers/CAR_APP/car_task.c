@@ -3,7 +3,7 @@
 int  Balance_Pwm,Velocity_Pwm,Turn_Pwm;        //PID计算的PWM值
 int  Motor1, Motor2;                  //左右电机PWM值
 int  Encoder_left, Encoder_right;     //检测速度
-float Movement = -0;                   //速度调节  
+float Movement = 0;                   //速度调节  
 int  Contrl_Turn = 64;                //转向调节变量
 
 //环境数据采集任务
@@ -27,7 +27,7 @@ void Car_Task_100HZ(void)
 {
 
 		
-		
+	//获取左右编码器的值，即速度
 	Encoder_left  = Read_Encoder(1);
 	Encoder_right = -Read_Encoder(2);
 	
@@ -58,7 +58,7 @@ void Car_Task_100HZ(void)
 
 void Printf_Task(void)
 {
-	//printf("%d %d\r\n",Encoder_left,Encoder_right);
+	//  printf("%d %d\r\n",Encoder_left,Encoder_right);
 		printf("%f,%f,%f -- \r\n",OutMpu.pitch,OutMpu.roll,OutMpu.yaw);
-		//printf("%d---- %d\r\n",Encoder_left,Encoder_right);
+	//	printf("%d---- %d\r\n",Encoder_left,Encoder_right);
 }
