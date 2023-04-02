@@ -10,13 +10,13 @@ int   control_turn=64;   //转向控制
 
 //PID调节参数
 struct pid_arg PID = {
+	//直立环参数
 	.Balance_Kp= 300,
 	.Balance_Kd= 1.5,
-	
+	//速度环参数
 	.Velocity_Kp= 80,    
 	.Velocity_Ki= 0.40,
-	
-	
+	//速度环参数
 	.Turn_Kp = 18,
 	.Turn_Kd = 0.18,
 };
