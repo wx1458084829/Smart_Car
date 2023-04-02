@@ -149,7 +149,7 @@ void StartTask_200HZ(void const * argument)
 //		printf("%d,%d,%d -- \r\n",acc.x,acc.y,acc.z);
 		//printf("%d,%d,%d -- \r\n",gyro.x,gyro.y,gyro.z);
 		Car_Task_200HZ();
-    osDelay(1);
+    osDelay(5);
   }
   /* USER CODE END StartTask_200HZ */
 }
@@ -170,7 +170,7 @@ void StartTask_100HZ(void const * argument)
   for(;;)
   {
 		Car_Task_100HZ();
-    osDelay(1);
+    osDelay(10);
   }
   /* USER CODE END StartTask_100HZ */
 }
