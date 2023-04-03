@@ -52,7 +52,7 @@ void Car_Task_100HZ(void)
 void Printf_Task(void)
 {
 		//PITCH（俯仰角）、ROLL（翻滚角）、YAW（航向角）
-		printf("%f,%f,%f -- \r\n",OutMpu.pitch,OutMpu.roll,OutMpu.yaw);
+		//printf("%f,%f,%f -- \r\n",OutMpu.pitch,OutMpu.roll,OutMpu.yaw);
 	
 		//显示采集到的速度
 		//printf("%d---- %d\r\n",Encoder_left,Encoder_right);

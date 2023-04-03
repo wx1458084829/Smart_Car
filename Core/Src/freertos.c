@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
 #include "car_task.h"
+#include "esp32.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +43,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define   Message_Q_NUM      5
+#define   Message_Q_Length   sizeof(tEsp32_RcvBuf)
+xQueueHandle  Message_Queue;
+tEsp32_RcvBuf Uart4_Rcv;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -122,7 +126,7 @@ void MX_FREERTOS_Init(void) {
   Task_PrintfHandle = osThreadCreate(osThread(Task_Printf), NULL);
 
   /* definition and creation of Task_Interactio */
-  osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 128);
+  osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 256);
   Task_InteractioHandle = osThreadCreate(osThread(Task_Interactio), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -211,9 +215,23 @@ void StartTask_Printf(void const * argument)
 void StartTask_Interaction(void const * argument)
 {
   /* USER CODE BEGIN StartTask_Interaction */
+		uint8_t time = 0;
+	
+	 printf("交互进程运行\n");
+	
+	
+	
+	 Message_Queue =  xQueueCreate ( Message_Q_NUM, Message_Q_Length );
+	 HAL_UART_Receive_DMA(&huart4, Uart4_Rcv.RcvBuf, 255);
+	 __HAL_UART_ENABLE_IT(&huart4,UART_IT_IDLE );
+	
+	ESP32_Init();
+	printf("交互进程初始化完成\n");
   /* Infinite loop */
   for(;;)
   {
+		ESP32_Data_Rcv();
+		//printf("%s","开始");
     osDelay(10);	//100hz
   }
   /* USER CODE END StartTask_Interaction */
