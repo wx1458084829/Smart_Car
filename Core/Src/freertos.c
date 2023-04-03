@@ -214,7 +214,7 @@ void StartTask_Interaction(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+    osDelay(10);	//100hz
   }
   /* USER CODE END StartTask_Interaction */
 }
