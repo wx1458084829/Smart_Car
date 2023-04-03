@@ -52,6 +52,7 @@
 osThreadId Task_200HZHandle;
 osThreadId Task_100HZHandle;
 osThreadId Task_PrintfHandle;
+osThreadId Task_InteractioHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +62,7 @@ osThreadId Task_PrintfHandle;
 void StartTask_200HZ(void const * argument);
 void StartTask_100HZ(void const * argument);
 void StartTask_Printf(void const * argument);
+void StartTask_Interaction(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,6 +120,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Task_Printf */
   osThreadDef(Task_Printf, StartTask_Printf, osPriorityIdle, 0, 128);
   Task_PrintfHandle = osThreadCreate(osThread(Task_Printf), NULL);
+
+  /* definition and creation of Task_Interactio */
+  osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 128);
+  Task_InteractioHandle = osThreadCreate(osThread(Task_Interactio), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -193,6 +199,24 @@ void StartTask_Printf(void const * argument)
     osDelay(200);
   }
   /* USER CODE END StartTask_Printf */
+}
+
+/* USER CODE BEGIN Header_StartTask_Interaction */
+/**
+* @brief Function implementing the Task_Interactio thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_Interaction */
+void StartTask_Interaction(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_Interaction */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(100);
+  }
+  /* USER CODE END StartTask_Interaction */
 }
 
 /* Private application code --------------------------------------------------*/
