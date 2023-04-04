@@ -217,16 +217,19 @@ void StartTask_Interaction(void const * argument)
   /* USER CODE BEGIN StartTask_Interaction */
 	uint8_t time = 0;
 	 printf("交互进程运行\n");
-	
+	//创建队列
 	 Message_Queue =  xQueueCreate ( Message_Q_NUM, Message_Q_Length );
+	//接收DMA
 	 HAL_UART_Receive_DMA(&huart4, Uart4_Rcv.RcvBuf, 255);
+	//开启中断
 	 __HAL_UART_ENABLE_IT(&huart4,UART_IT_IDLE );
-	
+	//初始化esp32
 	ESP32_Init();
 	printf("交互进程初始化完成\n");
   /* Infinite loop */
   for(;;)
   {
+		//接收发送过来的数据
 		ESP32_Data_Rcv();
 		//printf("%s","开始");
     osDelay(10);	//100hz
