@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
 #include "car_task.h"
+#include "esp32.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +43,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define   Message_Q_NUM      5
+#define   Message_Q_Length   sizeof(tEsp32_RcvBuf)
+xQueueHandle  Message_Queue;
+tEsp32_RcvBuf Uart4_Rcv;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -52,6 +56,7 @@
 osThreadId Task_200HZHandle;
 osThreadId Task_100HZHandle;
 osThreadId Task_PrintfHandle;
+osThreadId Task_InteractioHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +66,7 @@ osThreadId Task_PrintfHandle;
 void StartTask_200HZ(void const * argument);
 void StartTask_100HZ(void const * argument);
 void StartTask_Printf(void const * argument);
+void StartTask_Interaction(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,6 +124,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Task_Printf */
   osThreadDef(Task_Printf, StartTask_Printf, osPriorityIdle, 0, 128);
   Task_PrintfHandle = osThreadCreate(osThread(Task_Printf), NULL);
+
+  /* definition and creation of Task_Interactio */
+  osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 256);
+  Task_InteractioHandle = osThreadCreate(osThread(Task_Interactio), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -193,6 +203,38 @@ void StartTask_Printf(void const * argument)
     osDelay(200);
   }
   /* USER CODE END StartTask_Printf */
+}
+
+/* USER CODE BEGIN Header_StartTask_Interaction */
+/**
+* @brief Function implementing the Task_Interactio thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_Interaction */
+void StartTask_Interaction(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_Interaction */
+	uint8_t time = 0;
+	 printf("交互进程运行\n");
+	//创建队列
+	 Message_Queue =  xQueueCreate ( Message_Q_NUM, Message_Q_Length );
+	//接收DMA
+	 HAL_UART_Receive_DMA(&huart4, Uart4_Rcv.RcvBuf, 255);
+	//开启中断
+	 __HAL_UART_ENABLE_IT(&huart4,UART_IT_IDLE );
+	//初始化esp32
+	ESP32_Init();
+	printf("交互进程初始化完成\n");
+  /* Infinite loop */
+  for(;;)
+  {
+		//接收发送过来的数据
+		ESP32_Data_Rcv();
+		//printf("%s","开始");
+    osDelay(10);	//100hz
+  }
+  /* USER CODE END StartTask_Interaction */
 }
 
 /* Private application code --------------------------------------------------*/

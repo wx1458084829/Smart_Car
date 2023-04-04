@@ -24,6 +24,11 @@ struct mpu6050_data{
 
 extern struct mpu6050_data OutMpu;
 
+extern int  Balance_Pwm,Velocity_Pwm,Turn_Pwm;        //PID计算的PWM值
+extern int  Motor1, Motor2;                  //左右电机PWM值
+extern int  Encoder_left, Encoder_right;     //检测速度
+extern float Movement;                   //速度调节  
+extern int  Contrl_Turn;                //转向调节变量
 
 void Car_Task_200HZ(void);
 void Car_Task_100HZ(void);
