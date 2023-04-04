@@ -215,11 +215,8 @@ void StartTask_Printf(void const * argument)
 void StartTask_Interaction(void const * argument)
 {
   /* USER CODE BEGIN StartTask_Interaction */
-		uint8_t time = 0;
-	
+	uint8_t time = 0;
 	 printf("交互进程运行\n");
-	
-	
 	
 	 Message_Queue =  xQueueCreate ( Message_Q_NUM, Message_Q_Length );
 	 HAL_UART_Receive_DMA(&huart4, Uart4_Rcv.RcvBuf, 255);
