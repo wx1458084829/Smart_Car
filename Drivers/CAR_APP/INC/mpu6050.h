@@ -2,7 +2,7 @@
 #define __MPU6050_H
 
 #include "sys.h"
-#include "i2c.h"
+#include "iic.h"
 #include "delay.h"
 
 //****************************************

@@ -8,6 +8,9 @@
 **************************************************************************************************************/
 u8 MPU_Init(void)
 { 
+	IIC_Init(); //初始化IIC
+	
+	HAL_Delay(1);
 	u8 res;
 	MPU_Write_Byte(MPU_PWR_MGMT1_REG,0X80);	//复位MPU6050
   delay_ms(100);
@@ -146,18 +149,18 @@ u8 MPU_Write_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 {
 	u8 i; 
     IIC_Start(); 
-	IIC_Send_Byte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_Wait_Ack())	//等待应答
+	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck())	//等待应答
 	{
 		IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);	//写寄存器地址
-    IIC_Wait_Ack();		//等待应答
+    IIC_SendByte(reg);	//写寄存器地址
+    IIC_WaitAck();		//等待应答
 	for(i=0;i<len;i++)
 	{
-		IIC_Send_Byte(buf[i]);	//发送数据
-		if(IIC_Wait_Ack())		//等待ACK
+		IIC_SendByte(buf[i]);	//发送数据
+		if(IIC_WaitAck())		//等待ACK
 		{
 			IIC_Stop();	 
 			return 1;		 
@@ -175,21 +178,21 @@ u8 MPU_Write_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 u8 MPU_Read_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 { 
  	IIC_Start(); 
-	IIC_Send_Byte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_Wait_Ack())	//等待应答
+	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck())	//等待应答
 	{
 		IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);	//写寄存器地址
-    IIC_Wait_Ack();		//等待应答
+    IIC_SendByte(reg);	//写寄存器地址
+    IIC_WaitAck();		//等待应答
     IIC_Start();
-	IIC_Send_Byte((addr<<1)|1);//发送器件地址+读命令	
-    IIC_Wait_Ack();		//等待应答 
+	IIC_SendByte((addr<<1)|1);//发送器件地址+读命令	
+    IIC_WaitAck();		//等待应答 
 	while(len)
 	{
-		if(len==1)*buf=IIC_Read_Byte(0);//读数据,发送nACK 
-		else *buf=IIC_Read_Byte(1);		//读数据,发送ACK  
+		if(len==1)*buf=IIC_ReadByte(0);//读数据,发送nACK 
+		else *buf=IIC_ReadByte(1);		//读数据,发送ACK  
 		len--;
 		buf++; 
 	}    
@@ -204,16 +207,16 @@ u8 MPU_Read_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 u8 MPU_Write_Byte(u8 reg,u8 data) 				 
 { 
     IIC_Start(); 
-	IIC_Send_Byte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_Wait_Ack())	//等待应答
+	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck())	//等待应答
 	{
 		IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);	//写寄存器地址
-    IIC_Wait_Ack();		//等待应答 
-	IIC_Send_Byte(data);//发送数据
-	if(IIC_Wait_Ack())	//等待ACK
+    IIC_SendByte(reg);	//写寄存器地址
+    IIC_WaitAck();		//等待应答 
+	IIC_SendByte(data);//发送数据
+	if(IIC_WaitAck())	//等待ACK
 	{
 		IIC_Stop();	 
 		return 1;		 
@@ -231,14 +234,14 @@ u8 MPU_Read_Byte(u8 reg)
 {
 	u8 res;
     IIC_Start(); 
-	IIC_Send_Byte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	IIC_Wait_Ack();		//等待应答 
-    IIC_Send_Byte(reg);	//写寄存器地址
-    IIC_Wait_Ack();		//等待应答
+	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	IIC_WaitAck();		//等待应答 
+    IIC_SendByte(reg);	//写寄存器地址
+    IIC_WaitAck();		//等待应答
     IIC_Start();
-	IIC_Send_Byte((MPU_ADDR<<1)|1);//发送器件地址+读命令	
-    IIC_Wait_Ack();		//等待应答 
-	res=IIC_Read_Byte(0);//读取数据,发送nACK 
+	IIC_SendByte((MPU_ADDR<<1)|1);//发送器件地址+读命令	
+    IIC_WaitAck();		//等待应答 
+	res=IIC_ReadByte(0);//读取数据,发送nACK 
     IIC_Stop();			//产生一个停止条件 
 	return res;		
 }
