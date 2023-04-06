@@ -6,6 +6,8 @@
 #include "mpu6050.h"
 #include "inv_mpu_user.h"
 #include "control.h"
+#include "oled.h"
+
 
 struct mpu6050_data{
 	
@@ -35,6 +37,6 @@ extern uint8_t  Car_Status; //Ð¡³µ×´Ì¬
 void Car_Task_200HZ(void);
 void Car_Task_100HZ(void);
 void Printf_Task(void);
-
+void Oled_Task(void);
 #endif  /** __CAR_TASK_H */
 

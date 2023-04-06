@@ -29,6 +29,7 @@
 #include "mpu6050.h"
 #include "car_task.h"
 #include "esp32.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -253,10 +254,12 @@ void StartTask_Interaction(void const * argument)
 void StartTask_Oled(void const * argument)
 {
   /* USER CODE BEGIN StartTask_Oled */
+	OLED_Init();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+		Oled_Task();
+    osDelay(10);
   }
   /* USER CODE END StartTask_Oled */
 }
