@@ -5,6 +5,8 @@ int  Motor1, Motor2;                  //左右电机PWM值
 int  Encoder_left, Encoder_right;     //检测速度
 float Movement = 0;                   //速度调节  
 int  Contrl_Turn = 64;                //转向调节变量
+uint8_t  Car_Status = 0;  	//小车状态
+int Max_Speed = 50; //小车限制速度
 
 //环境数据采集任务
 void Car_Task_200HZ(void)
@@ -23,10 +25,18 @@ void Car_Task_200HZ(void)
 //PID控制
 void Car_Task_100HZ(void)
 {
+	if(Car_Status){
+		Motor1 = Motor2 =0;
+		Set_PWM(Motor1,Motor2);
+		return;
+	}
 		
 	//获取左右编码器的值，即速度，注意取负(因为编码器位置是对称的)
 	Encoder_left  = Read_Encoder(1);
 	Encoder_right = -Read_Encoder(2);
+	if(abs(Encoder_left)>Max_Speed||abs(Encoder_right)>Max_Speed){
+			Car_Status = 1;
+	}
 	
 	//直立环PWM
 		Balance_Pwm = Vertical_Ring_PD(OutMpu.pitch, OutMpu.gyro_x);
