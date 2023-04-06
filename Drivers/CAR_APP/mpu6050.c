@@ -1,5 +1,9 @@
 #include "mpu6050.h"
 
+
+//mpu6050使用的IIC定义
+IIC_TypeDef mpu6050_iic;
+
 /**************************************************************************************************************
 *函数名:MPU_Init()
 *功能:初始化MPU6050设置其量程
@@ -8,7 +12,20 @@
 **************************************************************************************************************/
 u8 MPU_Init(void)
 { 
-	IIC_Init(); //初始化IIC
+	//初始化结构体
+  memset(&mpu6050_iic, 0, sizeof(mpu6050_iic));
+	
+	
+	//设置端口以及引脚
+	mpu6050_iic.SCL_Pin = MPU6050_SCL_Pin;
+	mpu6050_iic.SCL_Port = MPU6050_SCL_GPIO_Port;
+	mpu6050_iic.SDA_Pin = MPU6050_SDA_Pin;
+	mpu6050_iic.SDA_Port = MPU6050_SDA_GPIO_Port;
+	mpu6050_iic.SDA_Enable_Clk = SCL_ENABLE_CLK;
+	mpu6050_iic.SCL_Enable_Clk = SDA_ENABLE_CLK;
+	
+	
+	IIC_Init(&mpu6050_iic); //初始化IIC
 	
 	HAL_Delay(1);
 	u8 res;
@@ -148,25 +165,25 @@ u8 MPU_Get_Accelerometer(short *ax,short *ay,short *az)
 u8 MPU_Write_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 {
 	u8 i; 
-    IIC_Start(); 
-	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_WaitAck())	//等待应答
+    IIC_Start(&mpu6050_iic); 
+	IIC_SendByte(&mpu6050_iic,(MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck(&mpu6050_iic))	//等待应答
 	{
-		IIC_Stop();		 
+		IIC_Stop(&mpu6050_iic);		 
 		return 1;		
 	}
-    IIC_SendByte(reg);	//写寄存器地址
-    IIC_WaitAck();		//等待应答
+    IIC_SendByte(&mpu6050_iic,reg);	//写寄存器地址
+    IIC_WaitAck(&mpu6050_iic);		//等待应答
 	for(i=0;i<len;i++)
 	{
-		IIC_SendByte(buf[i]);	//发送数据
-		if(IIC_WaitAck())		//等待ACK
+		IIC_SendByte(&mpu6050_iic,buf[i]);	//发送数据
+		if(IIC_WaitAck(&mpu6050_iic))		//等待ACK
 		{
-			IIC_Stop();	 
+			IIC_Stop(&mpu6050_iic);	 
 			return 1;		 
 		}		
 	}    
-    IIC_Stop();	 
+    IIC_Stop(&mpu6050_iic);	 
 	return 0;	
 } 
 /**************************************************************************************************************
@@ -177,26 +194,26 @@ u8 MPU_Write_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 **************************************************************************************************************/
 u8 MPU_Read_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 { 
- 	IIC_Start(); 
-	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_WaitAck())	//等待应答
+ 	IIC_Start(&mpu6050_iic); 
+	IIC_SendByte(&mpu6050_iic,(MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck(&mpu6050_iic))	//等待应答
 	{
-		IIC_Stop();		 
+		IIC_Stop(&mpu6050_iic);		 
 		return 1;		
 	}
-    IIC_SendByte(reg);	//写寄存器地址
-    IIC_WaitAck();		//等待应答
-    IIC_Start();
-	IIC_SendByte((addr<<1)|1);//发送器件地址+读命令	
-    IIC_WaitAck();		//等待应答 
+    IIC_SendByte(&mpu6050_iic,reg);	//写寄存器地址
+    IIC_WaitAck(&mpu6050_iic);		//等待应答
+    IIC_Start(&mpu6050_iic);
+	IIC_SendByte(&mpu6050_iic,(addr<<1)|1);//发送器件地址+读命令	
+    IIC_WaitAck(&mpu6050_iic);		//等待应答 
 	while(len)
 	{
-		if(len==1)*buf=IIC_ReadByte(0);//读数据,发送nACK 
-		else *buf=IIC_ReadByte(1);		//读数据,发送ACK  
+		if(len==1)*buf=IIC_ReadByte(&mpu6050_iic,0);//读数据,发送nACK 
+		else *buf=IIC_ReadByte(&mpu6050_iic,1);		//读数据,发送ACK  
 		len--;
 		buf++; 
 	}    
-    IIC_Stop();	//产生一个停止条件 
+    IIC_Stop(&mpu6050_iic);	//产生一个停止条件 
 	return 0;	
 }
 //IIC写一个字节 
@@ -206,22 +223,22 @@ u8 MPU_Read_Len(u8 addr,u8 reg,u8 len,u8 *buf)
 //    其他,错误代码
 u8 MPU_Write_Byte(u8 reg,u8 data) 				 
 { 
-    IIC_Start(); 
-	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	if(IIC_WaitAck())	//等待应答
+    IIC_Start(&mpu6050_iic); 
+	IIC_SendByte(&mpu6050_iic,(MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(IIC_WaitAck(&mpu6050_iic))	//等待应答
 	{
-		IIC_Stop();		 
+		IIC_Stop(&mpu6050_iic);		 
 		return 1;		
 	}
-    IIC_SendByte(reg);	//写寄存器地址
-    IIC_WaitAck();		//等待应答 
-	IIC_SendByte(data);//发送数据
-	if(IIC_WaitAck())	//等待ACK
+    IIC_SendByte(&mpu6050_iic,reg);	//写寄存器地址
+    IIC_WaitAck(&mpu6050_iic);		//等待应答 
+	IIC_SendByte(&mpu6050_iic,data);//发送数据
+	if(IIC_WaitAck(&mpu6050_iic))	//等待ACK
 	{
-		IIC_Stop();	 
+		IIC_Stop(&mpu6050_iic);	 
 		return 1;		 
 	}		 
-    IIC_Stop();	 
+    IIC_Stop(&mpu6050_iic);	 
 	return 0;
 }
 /*************************************************************************************************************
@@ -233,16 +250,16 @@ u8 MPU_Write_Byte(u8 reg,u8 data)
 u8 MPU_Read_Byte(u8 reg)
 {
 	u8 res;
-    IIC_Start(); 
-	IIC_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
-	IIC_WaitAck();		//等待应答 
-    IIC_SendByte(reg);	//写寄存器地址
-    IIC_WaitAck();		//等待应答
-    IIC_Start();
-	IIC_SendByte((MPU_ADDR<<1)|1);//发送器件地址+读命令	
-    IIC_WaitAck();		//等待应答 
-	res=IIC_ReadByte(0);//读取数据,发送nACK 
-    IIC_Stop();			//产生一个停止条件 
+    IIC_Start(&mpu6050_iic); 
+	IIC_SendByte(&mpu6050_iic,(MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	IIC_WaitAck(&mpu6050_iic);		//等待应答 
+    IIC_SendByte(&mpu6050_iic,reg);	//写寄存器地址
+    IIC_WaitAck(&mpu6050_iic);		//等待应答
+    IIC_Start(&mpu6050_iic);
+	IIC_SendByte(&mpu6050_iic,(MPU_ADDR<<1)|1);//发送器件地址+读命令	
+    IIC_WaitAck(&mpu6050_iic);		//等待应答 
+	res=IIC_ReadByte(&mpu6050_iic,0);//读取数据,发送nACK 
+    IIC_Stop(&mpu6050_iic);			//产生一个停止条件 
 	return res;		
 }
 

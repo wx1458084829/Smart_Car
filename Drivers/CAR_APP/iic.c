@@ -27,86 +27,103 @@ static void delay_us(uint32_t nus)
 	};
 }
 
-void IIC_Init(void)
+void IIC_Gpio_Clk_Cmd(uint32_t RCC_APB2ENR_IOPxEN)
+{
+	 do { \
+       __IO uint32_t tmpreg; \
+       SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPxEN);\
+       /* Delay after an RCC peripheral clock enabling */\
+       tmpreg = READ_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPxEN);\
+       UNUSED(tmpreg); \
+   } while(0U);
+}
+
+void IIC_Init(IIC_TypeDef *iic)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  //开启GPIO时钟
-  IIC_SDA_GPIO_CLK_ENABLE();
-  IIC_SCL_GPIO_CLK_ENABLE();
+	
+	//判断开启时钟
+	if(iic->SCL_Enable_Clk){
+		IIC_Gpio_Clk_Cmd(iic->SCL_Enable_Clk);
+	}
+	if(iic->SDA_Enable_Clk){
+		IIC_Gpio_Clk_Cmd(iic->SDA_Enable_Clk);
+	}
+	
   // 设置SDA参数
-  GPIO_InitStruct.Pin = SDA_GPIO_PIN;
+  GPIO_InitStruct.Pin = iic->SDA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   // 初始化SDA
-  HAL_GPIO_Init(SDA_GPIO_PORT, &GPIO_InitStruct);
+  HAL_GPIO_Init(iic->SDA_Port, &GPIO_InitStruct);
 
   // 设置SCL参数
-  GPIO_InitStruct.Pin = SCL_GPIO_PIN;
+  GPIO_InitStruct.Pin = iic->SCL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   // 初始化SCL
-  HAL_GPIO_Init(SCL_GPIO_PORT, &GPIO_InitStruct);
+  HAL_GPIO_Init(iic->SCL_Port, &GPIO_InitStruct);
 
   //发送停止信号
-  IIC_Stop();
+  IIC_Stop(iic);
 }
 
 /**
  * 发送停止信号
  */
-void IIC_Start(void)
+void IIC_Start(IIC_TypeDef *iic)
 {
   // 准备发送起始信号
-  IIC_SDA_1();
-  IIC_SCL_1();
+  IIC_SDA_1(iic);
+  IIC_SCL_1(iic);
   delay_us(1);
   //发送起始信号
-  IIC_SDA_0();
+  IIC_SDA_0(iic);
   delay_us(1);
 }
 
 /**
  * 停止信号
  */
-void IIC_Stop(void)
+void IIC_Stop(IIC_TypeDef *iic)
 {
   //准备发送停止信号
-  IIC_SDA_0();
-  IIC_SCL_1();
+  IIC_SDA_0(iic);
+  IIC_SCL_1(iic);
   delay_us(1);
   // 发送停止信号
-  IIC_SDA_1();
+  IIC_SDA_1(iic);
 }
 
 /**
  * 发送数据
  */
-void IIC_SendByte(uint8_t _ucByte)
+void IIC_SendByte(IIC_TypeDef *iic,uint8_t _ucByte)
 {
 	uint8_t i;
-	IIC_SCL_0();
+	IIC_SCL_0(iic);
  /* 写7bit数据 */
 	for (i = 0; i < 8; i++) {
 		if (_ucByte & 0x80) {
-			IIC_SDA_1();
+			IIC_SDA_1(iic);
 		}else{
-			IIC_SDA_0();
+			IIC_SDA_0(iic);
 		}
 		  delay_us(1);
-		IIC_SCL_1();
+		IIC_SCL_1(iic);
 		  delay_us(1);
-		IIC_SCL_0();
+		IIC_SCL_0(iic);
 		_ucByte <<= 1; /* 左移一个bit */
 		delay_us(1);
 	}
-	IIC_SDA_1();
+	IIC_SDA_1(iic);
 	delay_us(1);
 }
 
 /**
  * 读取数据
  */
-uint8_t IIC_ReadByte(uint8_t isAck)
+uint8_t IIC_ReadByte(IIC_TypeDef *iic,uint8_t isAck)
 {
 	uint8_t i;
 	uint8_t value;
@@ -115,18 +132,18 @@ uint8_t IIC_ReadByte(uint8_t isAck)
 	value = 0;
 	for (i = 0; i < 8; i++) {
 		value <<= 1;
-		IIC_SCL_1();
+		IIC_SCL_1(iic);
 		delay_us(1);
-		if (IIC_SDA_READ()) {
+		if (IIC_SDA_READ(iic)) {
 			value++;
 		}
-		IIC_SCL_0();
+		IIC_SCL_0(iic);
 		delay_us(1);
 	}
 	if(isAck){
-	IIC_Ack();
+	IIC_Ack(iic);
 	}else{
-	IIC_NAck();
+	IIC_NAck(iic);
 	}
 	
 	
@@ -136,14 +153,14 @@ uint8_t IIC_ReadByte(uint8_t isAck)
 /**
  * 等待从设备响应
  */
-uint8_t IIC_WaitAck(void)
+uint8_t IIC_WaitAck(IIC_TypeDef *iic)
 {
 	uint8_t re;
-	IIC_SDA_1();  //释放SDA
+	IIC_SDA_1(iic);  //释放SDA
 	delay_us(1);
-	IIC_SCL_1(); //拉升SCL总线
+	IIC_SCL_1(iic); //拉升SCL总线
 	delay_us(1);
-	if (IIC_SDA_READ())  //读取SDA线，判断slave有没有发送ACK
+	if (IIC_SDA_READ(iic))  //读取SDA线，判断slave有没有发送ACK
 	{
 		re = 1;
 	}
@@ -151,7 +168,7 @@ uint8_t IIC_WaitAck(void)
 	{
 		re = 0;
 	}
-	IIC_SCL_0(); //拉低SCL总线，读取确认信号完成
+	IIC_SCL_0(iic); //拉低SCL总线，读取确认信号完成
 	delay_us(1);
 	return re;
 }
@@ -159,25 +176,25 @@ uint8_t IIC_WaitAck(void)
 /**
  * 发送ACK
  */
-void IIC_Ack(void)
+void IIC_Ack(IIC_TypeDef *iic)
 {
-	IIC_SDA_0();	//拉低SDA线，是ACK信号
+	IIC_SDA_0(iic);	//拉低SDA线，是ACK信号
 	delay_us(1);
-	IIC_SCL_1();	//拉升SCL
+	IIC_SCL_1(iic);	//拉升SCL
 	delay_us(1);
-	IIC_SCL_0();	//拉低SCL，发送ACK完成
+	IIC_SCL_0(iic);	//拉低SCL，发送ACK完成
 	delay_us(1);
-	IIC_SDA_1();	//释放SDA
+	IIC_SDA_1(iic);	//释放SDA
 }
 /**
  * 发送NCK
  */
-void IIC_NAck(void)
+void IIC_NAck(IIC_TypeDef *iic)
 {
-	IIC_SDA_1();	//拉高SDA线，是NACK信号
+	IIC_SDA_1(iic);	//拉高SDA线，是NACK信号
 	delay_us(1);
-	IIC_SCL_1();	//拉升SCL线
+	IIC_SCL_1(iic);	//拉升SCL线
 	delay_us(1);
-	IIC_SCL_0();	//拉低SCL线，发送NACK完成
+	IIC_SCL_0(iic);	//拉低SCL线，发送NACK完成
 	delay_us(1);
 }

@@ -5,6 +5,10 @@
 #include "iic.h"
 #include "delay.h"
 
+//时钟定义
+#define SCL_ENABLE_CLK RCC_APB2ENR_IOPFEN
+#define SDA_ENABLE_CLK RCC_APB2ENR_IOPFEN
+
 //****************************************
 // 定义MPU6050内部地址
 //****************************************
