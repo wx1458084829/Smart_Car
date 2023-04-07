@@ -7,7 +7,7 @@ int  Encoder_left, Encoder_right;     //检测速度
 float Movement = 0;                   //速度调节  
 int  Contrl_Turn = 64;                //转向调节变量
 uint8_t  Car_Status = 0;  	//小车状态
-int Max_Speed = 50; //小车限制速度
+int Max_Speed = 60; //小车限制速度
 
 //环境数据采集任务
 void Car_Task_200HZ(void)
