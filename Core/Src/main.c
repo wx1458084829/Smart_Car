@@ -18,6 +18,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+//自定义依赖
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
@@ -106,9 +107,9 @@ int main(void)
   MX_TIM2_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-	printf("程序开始\r\n");
+	DBG("program start \r\n");
 	
-	
+
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 	
