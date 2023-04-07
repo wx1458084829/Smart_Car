@@ -68,37 +68,6 @@ void Printf_Task(void)
 		//printf("%d---- %d\r\n",Encoder_left,Encoder_right);
 }
 
-//------------------------------------------------------
-//char* itoa(int value, char* str, int radix) {
-//    static char dig[] =
-//        "0123456789"
-//        "abcdefghijklmnopqrstuvwxyz";
-//    int n = 0, neg = 0;
-//    unsigned int v;
-//    char* p, *q;
-//    char c;
-//	/* 负数：十进制直接在前面加负号，其它进制用补码 */
-//    if (radix == 10 && value < 0) {
-//        v = -value;
-//        neg = 1;
-//    }else
-//    {
-//        v = value;
-//    }
-//    /* 其它进制的负数转为unsigned int类型，即取了补码 */
-//    do {
-//        str[n++] = dig[v%radix];
-//        v /= radix;
-//    } while (v);
-//    if (neg)
-//        str[n++] = '-';
-//    str[n] = '\0';
-//	/* 字符串反转 */
-//    for (p = str, q = p + (n-1); p < q; ++p, --q)
-//        c = *p, *p = *q, *q = c;
-//    return str;
-//}
-
 
 void Show_Speed(int Encoder_left,int Encoder_right)
 {
