@@ -107,7 +107,7 @@ int main(void)
   MX_TIM2_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-	DBG("program start \r\n");
+//	DBG("program start \r\n");
 	
 
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
