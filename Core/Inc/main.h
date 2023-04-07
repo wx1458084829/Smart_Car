@@ -62,6 +62,10 @@ void Error_Handler(void);
 #define MOTOR_A2_GPIO_Port GPIOC
 #define MOTOR_A1_Pin GPIO_PIN_3
 #define MOTOR_A1_GPIO_Port GPIOA
+#define OLED_SCL_Pin GPIO_PIN_4
+#define OLED_SCL_GPIO_Port GPIOA
+#define OLED_SDA_Pin GPIO_PIN_5
+#define OLED_SDA_GPIO_Port GPIOA
 #define MPU6050_SCL_Pin GPIO_PIN_12
 #define MPU6050_SCL_GPIO_Port GPIOF
 #define MPU6050_SDA_Pin GPIO_PIN_13

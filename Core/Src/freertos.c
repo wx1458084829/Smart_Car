@@ -29,6 +29,7 @@
 #include "mpu6050.h"
 #include "car_task.h"
 #include "esp32.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +58,7 @@ osThreadId Task_200HZHandle;
 osThreadId Task_100HZHandle;
 osThreadId Task_PrintfHandle;
 osThreadId Task_InteractioHandle;
+osThreadId Task_OledHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -67,6 +69,7 @@ void StartTask_200HZ(void const * argument);
 void StartTask_100HZ(void const * argument);
 void StartTask_Printf(void const * argument);
 void StartTask_Interaction(void const * argument);
+void StartTask_Oled(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -128,6 +131,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Task_Interactio */
   osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 256);
   Task_InteractioHandle = osThreadCreate(osThread(Task_Interactio), NULL);
+
+  /* definition and creation of Task_Oled */
+  osThreadDef(Task_Oled, StartTask_Oled, osPriorityIdle, 0, 128);
+  Task_OledHandle = osThreadCreate(osThread(Task_Oled), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -235,6 +242,26 @@ void StartTask_Interaction(void const * argument)
     osDelay(10);	//100hz
   }
   /* USER CODE END StartTask_Interaction */
+}
+
+/* USER CODE BEGIN Header_StartTask_Oled */
+/**
+* @brief Function implementing the Task_Oled thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_Oled */
+void StartTask_Oled(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_Oled */
+	OLED_Init();
+  /* Infinite loop */
+  for(;;)
+  {
+		Oled_Task();
+    osDelay(10);
+  }
+  /* USER CODE END StartTask_Oled */
 }
 
 /* Private application code --------------------------------------------------*/

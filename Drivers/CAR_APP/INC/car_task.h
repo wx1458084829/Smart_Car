@@ -6,6 +6,8 @@
 #include "mpu6050.h"
 #include "inv_mpu_user.h"
 #include "control.h"
+#include "oled.h"
+
 
 struct mpu6050_data{
 	
@@ -30,9 +32,11 @@ extern int  Encoder_left, Encoder_right;     //检测速度
 extern float Movement;                   //速度调节  
 extern int  Contrl_Turn;                //转向调节变量
 
+extern uint8_t  Car_Status; //小车状态
+
 void Car_Task_200HZ(void);
 void Car_Task_100HZ(void);
 void Printf_Task(void);
-
+void Oled_Task(void);
 #endif  /** __CAR_TASK_H */
 

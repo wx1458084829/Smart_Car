@@ -387,7 +387,7 @@ void Host_Data_Receive_Anl(u8 *data_buf,u8 num)
 				
 					if(FS_MODE==0){
 						Contrl_Turn=64;
-						Movement=80;
+						Movement=60;
 					}
 										
 					break;
@@ -396,7 +396,7 @@ void Host_Data_Receive_Anl(u8 *data_buf,u8 num)
 
 					if(FS_MODE==0){
 						Contrl_Turn = 64;
-						Movement = -80;
+						Movement = -50;
 					}
 					
 					break;
