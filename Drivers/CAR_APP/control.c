@@ -3,22 +3,20 @@
 #include "stm32f1xx_hal.h"
 #include "control.h"
 
- 
 
-
-
-int   Dead_Zone=210;     //电机死区
-int   control_turn=64;                             //转向控制
+int   Dead_Zone=210;     //电机死区(电机将要开始旋转)
+int   control_turn=64;   //转向控制
 
 
 //PID调节参数
 struct pid_arg PID = {
-	.Balance_Kp= 300, //响应速度 250
-	
-	.Balance_Kd=1,//
-	
-	.Velocity_Kp= 56,    
-	.Velocity_Ki= 0.28,
+	//直立环参数
+	.Balance_Kp= 300,
+	.Balance_Kd= 1.5,
+	//速度环参数
+	.Velocity_Kp= 80,    
+	.Velocity_Ki= 0.40,
+	//速度环参数
 	.Turn_Kp = 18,
 	.Turn_Kd = 0.18,
 };
@@ -157,14 +155,14 @@ u8 Turn_off(const float Angle)
 	return temp;
 }
 
+
+
 /**************************************************************************************************************
 *函数名:Set_PWM()
 *功能:输出PWM控制电机
 *形参；(int motor1):电机1对应的PWM值/(int motor2):电机2对应的PWM值
 *返回值:无
 *************************************************************************************************************/
-
-
 void Set_PWM(int motor1,int motor2)
 {
 	if(motor1>0)	
@@ -182,7 +180,6 @@ void Set_PWM(int motor1,int motor2)
 	}else{
 	BIN1(0),			BIN2(1);
 	}
-
 	PWMB=Dead_Zone+(abs(motor2))*1.17;	
 	
 //	printf("PWMA = %d\n",PWMA);

@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2V8M.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE,MOTION_DRIVER_TARGET_MSP430,MPU6050</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;             ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;             ../Drivers/STM32F1xx_HAL_Driver/Inc;             ../Middlewares/Third_Party/FreeRTOS/Source/include;             ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;             ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;             ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;             ../Drivers/CMSIS/Include;             ..\Drivers\CAR_APP\INC;             ..\Drivers\CAR_APP\MPU6050_eMPL</IncludePath>
+              <IncludePath>../Core/Inc;                           ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;                           ../Drivers/STM32F1xx_HAL_Driver/Inc;                           ../Middlewares/Third_Party/FreeRTOS/Source/include;                           ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                           ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;                           ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;                           ../Drivers/CMSIS/Include;                           ..\Drivers\CAR_APP\INC;                           ..\Drivers\CAR_APP\MPU6050_eMPL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -404,6 +404,11 @@
               <FileName>freertos.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/freertos.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/dma.c</FilePath>
             </File>
             <File>
               <FileName>tim.c</FileName>
@@ -586,11 +591,6 @@
               <FilePath>..\Drivers\CAR_APP\delay.c</FilePath>
             </File>
             <File>
-              <FileName>i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CAR_APP\i2c.c</FilePath>
-            </File>
-            <File>
               <FileName>mpu6050.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\CAR_APP\mpu6050.c</FilePath>
@@ -599,6 +599,26 @@
               <FileName>control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\CAR_APP\control.c</FilePath>
+            </File>
+            <File>
+              <FileName>connect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\CAR_APP\connect.c</FilePath>
+            </File>
+            <File>
+              <FileName>esp32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\CAR_APP\esp32.c</FilePath>
+            </File>
+            <File>
+              <FileName>iic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\CAR_APP\iic.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\CAR_APP\oled.c</FilePath>
             </File>
           </Files>
         </Group>

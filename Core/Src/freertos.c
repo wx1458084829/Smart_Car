@@ -28,6 +28,8 @@
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
 #include "car_task.h"
+#include "esp32.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +44,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define   Message_Q_NUM      5
+#define   Message_Q_Length   sizeof(tEsp32_RcvBuf)
+xQueueHandle  Message_Queue;
+tEsp32_RcvBuf Uart4_Rcv;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -52,6 +57,8 @@
 osThreadId Task_200HZHandle;
 osThreadId Task_100HZHandle;
 osThreadId Task_PrintfHandle;
+osThreadId Task_InteractioHandle;
+osThreadId Task_OledHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +68,8 @@ osThreadId Task_PrintfHandle;
 void StartTask_200HZ(void const * argument);
 void StartTask_100HZ(void const * argument);
 void StartTask_Printf(void const * argument);
+void StartTask_Interaction(void const * argument);
+void StartTask_Oled(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -119,6 +128,14 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(Task_Printf, StartTask_Printf, osPriorityIdle, 0, 128);
   Task_PrintfHandle = osThreadCreate(osThread(Task_Printf), NULL);
 
+  /* definition and creation of Task_Interactio */
+  osThreadDef(Task_Interactio, StartTask_Interaction, osPriorityIdle, 0, 256);
+  Task_InteractioHandle = osThreadCreate(osThread(Task_Interactio), NULL);
+
+  /* definition and creation of Task_Oled */
+  osThreadDef(Task_Oled, StartTask_Oled, osPriorityIdle, 0, 128);
+  Task_OledHandle = osThreadCreate(osThread(Task_Oled), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -149,7 +166,7 @@ void StartTask_200HZ(void const * argument)
 //		printf("%d,%d,%d -- \r\n",acc.x,acc.y,acc.z);
 		//printf("%d,%d,%d -- \r\n",gyro.x,gyro.y,gyro.z);
 		Car_Task_200HZ();
-    osDelay(1);
+    osDelay(5);
   }
   /* USER CODE END StartTask_200HZ */
 }
@@ -170,7 +187,7 @@ void StartTask_100HZ(void const * argument)
   for(;;)
   {
 		Car_Task_100HZ();
-    osDelay(1);
+    osDelay(10);
   }
   /* USER CODE END StartTask_100HZ */
 }
@@ -193,6 +210,58 @@ void StartTask_Printf(void const * argument)
     osDelay(200);
   }
   /* USER CODE END StartTask_Printf */
+}
+
+/* USER CODE BEGIN Header_StartTask_Interaction */
+/**
+* @brief Function implementing the Task_Interactio thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_Interaction */
+void StartTask_Interaction(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_Interaction */
+	uint8_t time = 0;
+	 printf("交互进程运行\n");
+	//创建队列
+	 Message_Queue =  xQueueCreate ( Message_Q_NUM, Message_Q_Length );
+	//接收DMA
+	 HAL_UART_Receive_DMA(&huart4, Uart4_Rcv.RcvBuf, 255);
+	//开启中断
+	 __HAL_UART_ENABLE_IT(&huart4,UART_IT_IDLE );
+	//初始化esp32
+	ESP32_Init();
+	printf("交互进程初始化完成\n");
+  /* Infinite loop */
+  for(;;)
+  {
+		//接收发送过来的数据
+		ESP32_Data_Rcv();
+		//printf("%s","开始");
+    osDelay(10);	//100hz
+  }
+  /* USER CODE END StartTask_Interaction */
+}
+
+/* USER CODE BEGIN Header_StartTask_Oled */
+/**
+* @brief Function implementing the Task_Oled thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_Oled */
+void StartTask_Oled(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_Oled */
+	OLED_Init();
+  /* Infinite loop */
+  for(;;)
+  {
+		Oled_Task();
+    osDelay(10);
+  }
+  /* USER CODE END StartTask_Oled */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -1,5 +1,5 @@
 #include "delay.h"
-#include "sys.h"
+//#include "sys.h"
 	
 //延时nus
 //nus为要延时的us数.	
